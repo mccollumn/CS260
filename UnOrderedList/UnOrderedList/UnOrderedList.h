@@ -1,8 +1,8 @@
 /*
 @Filename:		UnOrderedList.h
 @Author:		Nick McCollum
-@Date:			4/2/2019
-@Version:		1.0
+@Date:			4/4/2019
+@Version:		2.0
 
 CS-260-02 Assignment 1
 Interface and implementation for UnOrderedList class
@@ -12,11 +12,13 @@ Interface and implementation for UnOrderedList class
 
 #include <iostream>
 
+template <typename Type>
 struct Node {
-	int data;
+	Type data;
 	Node* next;
 };
 
+template <typename Type>
 class UnOrderedList
 {
 public:
@@ -28,21 +30,21 @@ public:
 	@param: int - value to insert
 	@return: bool - true if value inserted successfully
 	*/
-	bool prepend(int value);
+	bool prepend(Type value);
 
 	/*
 	append: Inserts the given int at the end of the list.
 	@param: int - value to insert
 	@return: bool - true if value inserted successfully
 	*/
-	bool append(int value);
+	bool append(Type value);
 
 	/*
 	remove: Removes the given int from the list.
 	@param: int - value to remove
 	@return: bool - true if value removed successfully
 	*/
-	bool remove(int value);
+	bool remove(Type value);
 
 	/*
 	print: Prints the items in the list
@@ -63,7 +65,7 @@ public:
 	@param: int - value to search for
 	@return: int - position of value in the list
 	*/
-	int find(int value) const;
+	int find(Type value) const;
 
 	/*
 	removeAll: Removes all items from the list
@@ -72,20 +74,23 @@ public:
 	*/
 	void removeAll();
 private:
-	Node* head;
+	Node<Type>* head;
 };
 
-UnOrderedList::UnOrderedList() {
+template <typename Type>
+UnOrderedList<Type>::UnOrderedList() {
 	head = nullptr;
 }
 
-UnOrderedList::~UnOrderedList() {
+template <typename Type>
+UnOrderedList<Type>::~UnOrderedList() {
 	removeAll();
 }
 
-bool UnOrderedList::prepend(int value) {
+template <typename Type>
+bool UnOrderedList<Type>::prepend(Type value) {
 	if (!find(value)) {
-		Node* newNode = new Node;
+		Node<Type>* newNode = new Node<Type>;
 		newNode->data = value;
 		newNode->next = nullptr;
 
@@ -101,9 +106,10 @@ bool UnOrderedList::prepend(int value) {
 	return false;
 }
 
-bool UnOrderedList::append(int value) {
+template <typename Type>
+bool UnOrderedList<Type>::append(Type value) {
 	if (!find(value)) {
-		Node* newNode = new Node;
+		Node<Type>* newNode = new Node<Type>;
 		newNode->data = value;
 		newNode->next = nullptr;
 
@@ -111,7 +117,7 @@ bool UnOrderedList::append(int value) {
 			head = newNode;
 		}
 		else {
-			Node* current = head;
+			Node<Type>* current = head;
 			while (current->next != nullptr) {
 				current = current->next;
 			}
@@ -122,13 +128,14 @@ bool UnOrderedList::append(int value) {
 	return false;
 }
 
-bool UnOrderedList::remove(int value) {
+template <typename Type>
+bool UnOrderedList<Type>::remove(Type value) {
 	if (head == nullptr) {
 		return false;
 	}
 	else {
-		Node* current = head;
-		Node* previous = nullptr;
+		Node<Type>* current = head;
+		Node<Type>* previous = nullptr;
 		while (current != nullptr) {
 			if (current->data == value) {
 				if (head == current) {
@@ -150,8 +157,9 @@ bool UnOrderedList::remove(int value) {
 	}
 }
 
-void UnOrderedList::print() const {
-	Node* current = head;
+template <typename Type>
+void UnOrderedList<Type>::print() const {
+	Node<Type>* current = head;
 
 	std::cout << "The list contains the following " << count() << " elements:" << std::endl;
 	while (current != nullptr) {
@@ -166,8 +174,9 @@ void UnOrderedList::print() const {
 	}
 }
 
-int UnOrderedList::count() const {
-	Node* current = head;
+template <typename Type>
+int UnOrderedList<Type>::count() const {
+	Node<Type>* current = head;
 
 	if (current == nullptr) {
 		return 0;
@@ -182,8 +191,9 @@ int UnOrderedList::count() const {
 	}
 }
 
-int UnOrderedList::find(int value) const {
-	Node* current = head;
+template <typename Type>
+int UnOrderedList<Type>::find(Type value) const {
+	Node<Type>* current = head;
 	int position = 0;
 
 	while (current != nullptr) {
@@ -198,8 +208,9 @@ int UnOrderedList::find(int value) const {
 	return 0;
 }
 
-void UnOrderedList::removeAll() {
-	Node* current;
+template <typename Type>
+void UnOrderedList<Type>::removeAll() {
+	Node<Type>* current;
 
 	while (head != nullptr) {
 		current = head;
