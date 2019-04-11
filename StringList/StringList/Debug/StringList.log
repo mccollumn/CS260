@@ -1,0 +1,3 @@
+﻿  StringList.cpp
+c:\users\mccollumn\source\repos\stringlist\stringlist\stringlist.cpp(194): warning C4018: '<': signed/unsigned mismatch
+  StringList.vcxproj -> C:\Users\mccollumn\source\repos\StringList\Debug\StringList.exe
