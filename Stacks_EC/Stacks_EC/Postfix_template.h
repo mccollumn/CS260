@@ -16,7 +16,6 @@
 #include <list>
 #include <cctype>
 #include <iostream>
-#include <algorithm>
 #include <regex>
 
 struct Operators {
@@ -377,7 +376,7 @@ Type Postfix<Type>::evaluate(std::string token, Type operand1, Type operand2) {
 template <typename Type>
 void Postfix<Type>::parseToList(std::string exp, std::list<std::string>& list) {
 	// This is kludgy but it works.
-	// TODO: Improve regex patterns to eliminate the extra logic
+	// TODO: Improve regex patterns to eliminate the extra logic needed to process negative numbers
 	std::string dPattern = "([\\(\\)\\*/[:space:]\\+-]|[^\\(\\)\\*/[:space:]\\+-]+)";
 	std::string dPatternNeg = "([\\(\\)\\*/[:space:]\\+]|[^\\(\\)\\*/[:space:]\\+]+)";
 	std::string negPattern = "^\\s?(-[0-9.]+)";
