@@ -2,7 +2,7 @@
 *
 * @file		Postfix.h
 * @author	Nick McCollum
-* @version	2.0
+* @version	2.1
 *
 * CS-260-02 - Assignment 3
 * Interface and implementation for Postfix class template
@@ -50,7 +50,7 @@ public:
 
 		@return		The expression to be converted
 	*/
-	std::string getExp();
+	std::string getExp() const;
 
 	/**
 		Returns the infix expression
@@ -58,7 +58,7 @@ public:
 		@return		The infix expression if the original expression has been converted.
 					Otherwise returns empty string.
 	*/
-	std::string getInfixExp();
+	std::string getInfixExp() const;
 
 	/**
 		Returns the postfix expression
@@ -66,21 +66,21 @@ public:
 		@return		The postfix expression if the infix has been converted.
 					Otherwise returns empty string.
 	*/
-	std::string getPostfixExp();
+	std::string getPostfixExp() const;
 
 	/**
 		Prints the provided expression to stdout
 
 		@param	exp	The expression to print
 	*/
-	void print(std::string exp);
+	void print(std::string exp) const;
 
 	/**
 		Prints the provided string to stderr
 
 		@param	error	The error message to print
 	*/
-	void printError(std::string error = "");
+	void printError(std::string error = "") const;
 
 	/**
 		Validates the provided expression and converts it to infix
@@ -108,8 +108,6 @@ private:
 	std::string exp;
 	std::string infixExp;
 	std::string postfixExp;
-	std::stack<std::string> operatorStack;
-	std::stack<Type> operandStack;
 	std::list<std::string> infixExpLst;
 	std::list<std::string> postfixExpLst;
 
@@ -127,7 +125,15 @@ private:
 		@param	op	The operator to check
 		@return		True if valid operator, false if not
 	*/
-	bool isOperator(std::string op);
+	bool isOperator(std::string op) const;
+
+	/**
+		Determines if the provided expression contains any negative numbers
+
+		@param	exp	The expression to check
+		@return		True if contains at least one negative number, false otherwise
+	*/
+	bool includesNegative(std::string exp) const;
 
 	/**
 		Determines the precedence of an operator
@@ -136,7 +142,7 @@ private:
 		@return		An integer representing the precedence relative to the other operators.
 					Possible values are 0 - 3.
 	*/
-	int getPrecedence(std::string op);
+	int getPrecedence(std::string op) const;
 
 	/**
 		Concatenates a list of strings into a single string
@@ -181,31 +187,31 @@ void Postfix<Type>::setExp(std::string exp) {
 
 // ----------------------------------------------
 template <typename Type>
-std::string Postfix<Type>::getExp() {
+std::string Postfix<Type>::getExp() const {
 	return exp;
 }
 
 // ----------------------------------------------
 template <typename Type>
-std::string Postfix<Type>::getInfixExp() {
+std::string Postfix<Type>::getInfixExp() const {
 	return infixExp;
 }
 
 // ----------------------------------------------
 template <typename Type>
-std::string Postfix<Type>::getPostfixExp() {
+std::string Postfix<Type>::getPostfixExp() const {
 	return postfixExp;
 }
 
 // ----------------------------------------------
 template <typename Type>
-void Postfix<Type>::print(std::string exp) {
+void Postfix<Type>::print(std::string exp) const {
 	std::cout << exp << std::endl;
 }
 
 // ----------------------------------------------
 template <typename Type>
-void Postfix<Type>::printError(std::string error) {
+void Postfix<Type>::printError(std::string error) const {
 	if (error != "") {
 		std::cerr << error << std::endl;
 	}
@@ -228,6 +234,7 @@ bool Postfix<Type>::convertToInfix() {
 // ----------------------------------------------
 template <typename Type>
 bool Postfix<Type>::convertToPostfix() {
+	std::stack<std::string> operatorStack;
 	int listLength = infixExpLst.size();
 	std::string token;
 
@@ -258,7 +265,6 @@ bool Postfix<Type>::convertToPostfix() {
 				operatorStack.pop();
 			}
 			operatorStack.push(token);
-
 		}
 	}
 	while (!operatorStack.empty()) {
@@ -272,6 +278,7 @@ bool Postfix<Type>::convertToPostfix() {
 // ----------------------------------------------
 template <typename Type>
 bool Postfix<Type>::evalPostfix(Type& result) {
+	std::stack<Type> operandStack;
 	int listLength = postfixExpLst.size();
 	std::string token;
 
@@ -291,10 +298,16 @@ bool Postfix<Type>::evalPostfix(Type& result) {
 		else {
 			if (token.find(".") == 1) {
 				float operand = std::stof(token);
+				// Compiler may throw a conversion warning for the following line.
+				// It can safely be ignored because you will only get here if the
+				// operand and operandStack data types match.
 				operandStack.push(operand);
 			}
 			else {
 				int operand = std::stoi(token);
+				// Compiler may throw a conversion warning for the following line.
+				// It can safely be ignored because you will only get here if the
+				// operand and operandStack data types match.
 				operandStack.push(operand);
 			}
 		}
@@ -324,7 +337,7 @@ bool Postfix<Type>::validate(std::string exp) {
 
 // ----------------------------------------------
 template <typename Type>
-bool Postfix<Type>::isOperator(std::string op) {
+bool Postfix<Type>::isOperator(std::string op) const {
 	for (int x = 0; x < NUM_OPERATORS; x++) {
 		if (OPERATORS[x].op == op) {
 			return true;
@@ -335,7 +348,18 @@ bool Postfix<Type>::isOperator(std::string op) {
 
 // ----------------------------------------------
 template <typename Type>
-int Postfix<Type>::getPrecedence(std::string op) {
+bool Postfix<Type>::includesNegative(std::string exp) const {
+	typename std::regex negInStr("[+-/*]+\\s-[0-9]+");
+	typename std::regex negBeginStr("^-");
+	if (std::regex_search(exp, negBeginStr) || std::regex_search(exp, negInStr)) {
+		return true;
+	}
+	return false;
+}
+
+// ----------------------------------------------
+template <typename Type>
+int Postfix<Type>::getPrecedence(std::string op) const {
 	for (int x = 0; x < NUM_OPERATORS; x++) {
 		if (OPERATORS[x].op == op) {
 			return OPERATORS[x].prec;
@@ -381,17 +405,16 @@ void Postfix<Type>::parseToList(std::string exp, std::list<std::string>& list) {
 	std::string dPatternNeg = "([\\(\\)\\*/[:space:]\\+]|[^\\(\\)\\*/[:space:]\\+]+)";
 	std::string negPattern = "^\\s?(-[0-9.]+)";
 	typename std::regex blank("(^[[:space:]]$)");
-	typename std::regex negInStr("[+-/*]+\\s-[0-9]+");
-	typename std::regex negBeginStr("^-");
 	typename std::regex delimiters;
-	if (std::regex_search(exp, negBeginStr) || std::regex_search(exp, negInStr)) {
+	std::string token;
+
+	if (includesNegative(exp)) {
 		delimiters = negPattern + "|" + dPatternNeg;
 	}
 	else {
 		delimiters = negPattern + "|" + dPattern;
 	}
-
-	std::string token;
+	
 	typename std::regex_iterator<std::string::iterator> rit(exp.begin(), exp.end(), delimiters);
 	typename std::regex_iterator<std::string::iterator> rend;
 	while (rit != rend) {

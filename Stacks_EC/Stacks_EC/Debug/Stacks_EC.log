@@ -1,6 +1,6 @@
 ﻿  PostfixTesting.cpp
-c:\users\mccollumn\source\repos\stacks_ec\stacks_ec\postfix_template.h(294): warning C4244: 'argument': conversion from 'float' to 'const int', possible loss of data
-  c:\users\mccollumn\source\repos\stacks_ec\stacks_ec\postfix_template.h(274): note: while compiling class template member function 'bool Postfix<int>::evalPostfix(Type &)'
+c:\users\mccollumn\source\repos\stacks_ec\stacks_ec\postfix_template.h(304): warning C4244: 'argument': conversion from 'float' to 'const int', possible loss of data
+  c:\users\mccollumn\source\repos\stacks_ec\stacks_ec\postfix_template.h(280): note: while compiling class template member function 'bool Postfix<int>::evalPostfix(Type &)'
           with
           [
               Type=int
@@ -11,8 +11,8 @@ c:\users\mccollumn\source\repos\stacks_ec\stacks_ec\postfix_template.h(294): war
               Type=int
           ]
   c:\users\mccollumn\source\repos\stacks_ec\stacks_ec\postfixtesting.cpp(19): note: see reference to class template instantiation 'Postfix<int>' being compiled
-c:\users\mccollumn\source\repos\stacks_ec\stacks_ec\postfix_template.h(298): warning C4244: 'argument': conversion from 'int' to 'const float', possible loss of data
-  c:\users\mccollumn\source\repos\stacks_ec\stacks_ec\postfix_template.h(274): note: while compiling class template member function 'bool Postfix<float>::evalPostfix(Type &)'
+c:\users\mccollumn\source\repos\stacks_ec\stacks_ec\postfix_template.h(311): warning C4244: 'argument': conversion from 'int' to 'const float', possible loss of data
+  c:\users\mccollumn\source\repos\stacks_ec\stacks_ec\postfix_template.h(280): note: while compiling class template member function 'bool Postfix<float>::evalPostfix(Type &)'
           with
           [
               Type=float
