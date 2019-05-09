@@ -20,7 +20,7 @@
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>
-    <ProjectGuid>{EA5D5E02-96D8-4C3C-896B-41B1F971220C}</ProjectGuid>
+    <ProjectGuid>{01AB44B5-10AF-444E-9B23-8F599BBFBA62}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>BinTree</RootNamespace>
     <WindowsTargetPlatformVersion>10.0.17763.0</WindowsTargetPlatformVersion>

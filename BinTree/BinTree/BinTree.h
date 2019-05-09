@@ -2,16 +2,14 @@
 *
 * @file		BinTree.h
 * @author	Nick McCollum
-* @version	1.0
+* @version	2.0
 *
-* CS-260-02 - Assignment 5
+* CS-260-02 - Assignment 6
 * Interface and implementation for Binary Search Tree class template
 *
 * -------------------------------------------- */
 
 #pragma once
-
-#include <iostream>
 
 template <typename Type>
 struct Node {
@@ -24,7 +22,7 @@ template <typename Type>
 class BinTree
 {
 public:
-	/** 
+	/**
 		Default constructor
 	*/
 	BinTree();
@@ -35,14 +33,6 @@ public:
 	~BinTree();
 
 	/**
-		Copies the binary tree
-
-		@param	sourceTree		The tree to be copied
-		@param	destinationTree	The copied tree
-	*/
-	void copy(Node<Type>* &sourceTree, Node<Type>* destinationTree);
-
-	/**
 		Inserts a value into the tree
 
 		@param	data	The value to insert
@@ -50,7 +40,7 @@ public:
 	void insert(Type data);
 
 	/**
-		Removes an value from the tree
+		Removes a value from the tree
 
 		@param	data	The value to remove
 		@return			True if value was removed successfully,
@@ -59,18 +49,45 @@ public:
 	bool remove(Type data);
 
 	/**
-		Prints the values in order
+		Copies the binary tree
+
+		@param		destinationTree		Pointer to the empty destination tree
+		@return							True if the copy was possible,
+										false if not
 	*/
-	void print();
-private:
-	Node<Type>* root;
+	bool copy(BinTree<Type>* destinationTree);
 
 	/**
-		Removes the given node from the tree
-
-		@param	nodePtr		The node to be removed
+		Removes all nodes in the tree
 	*/
-	void removeNode(Node<Type>* &nodePtr);
+	void removeAll();
+
+	/**
+		Processes provided function in order
+
+		@param	function	Pointer to function
+	
+	*/
+	void processInOrder(void(*function)(Type data, int level));
+
+	/**
+		Processes provided function post order
+
+		@param	function	Pointer to function
+
+	*/
+	void processPostOrder(void(*function)(Type data, int level));
+
+	/**
+		Processes provided function pre order
+
+		@param	function	Pointer to function
+
+	*/
+	void processPreOrder(void(*function)(Type data, int level));
+
+private:
+	Node<Type>* root;
 
 	/**
 		Deletes all nodes in the tree
@@ -80,13 +97,49 @@ private:
 	void destroy(Node<Type>* &nodePtr);
 
 	/**
-		Prints the node values and their level in order
+		Recursively deep copies the tree
 
-		@param	nodePtr		Root of the tree to be printed
+		@param	sourceTree		Root node pointer of tree to be copied
+		@param	destinationTree	Root node pointer of the destination tree
+	*/
+	void copy(Node<Type>* sourceTree, Node<Type>* &destinationTree);
+
+	/**
+		Removes the given node from the tree
+
+		@param	nodePtr		The node to be removed
+	*/
+	void removeNode(Node<Type>* &nodePtr);
+
+	/**
+		Processes the node values in order
+
+		@param	function	Pointer to function
+		@param	nodePtr		Node of the tree to be processed
 		@param	level		Used to track the level of each node
 							Provide the value for root (e.g. 0)
 	*/
-	void inorder(Node<Type>* &nodePtr, int level) const;
+	void processNodeInOrder(void(*function)(Type data, int level), Node<Type>* &nodePtr, int level);
+
+	/**
+		Processes the node values post order
+
+		@param	function	Pointer to function
+		@param	nodePtr		Node of the tree to be processed
+		@param	level		Used to track the level of each node
+							Provide the value for root (e.g. 0)
+	*/
+	void processNodePostOrder(void(*function)(Type data, int level), Node<Type>* &nodePtr, int level);
+
+	/**
+		Processes the node values pre order
+
+		@param	function	Pointer to function
+		@param	nodePtr		Node of the tree to be processed
+		@param	level		Used to track the level of each node
+							Provide the value for root (e.g. 0)
+	*/
+	void processNodePreOrder(void(*function)(Type data, int level), Node<Type>* &nodePtr, int level);
 };
 
 // ----------------------------------------------
@@ -110,12 +163,6 @@ void BinTree<Type>::destroy(Node<Type>* &nodePtr) {
 		delete nodePtr;
 		nodePtr = nullptr;
 	}
-}
-
-// ----------------------------------------------
-template <typename Type>
-void BinTree<Type>::copy(Node<Type>* &sourceTree, Node<Type>* destinationTree) {
-	return false;
 }
 
 // ----------------------------------------------
@@ -197,9 +244,26 @@ bool BinTree<Type>::remove(Type data) {
 
 // ----------------------------------------------
 template <typename Type>
-void BinTree<Type>::print() {
-	int level = 0;
-	inorder(root, level);
+bool BinTree<Type>::copy(BinTree<Type>* destinationTree) {
+	if (destinationTree->root == nullptr) {
+		copy(this->root, destinationTree->root);
+		return true;
+	}
+	return false;
+}
+
+// ----------------------------------------------
+template <typename Type>
+void BinTree<Type>::copy(Node<Type>* sourceTree, Node<Type>* &destinationTree) {
+	if (sourceTree == nullptr) {
+		destinationTree = nullptr;
+	}
+	else {
+		destinationTree = new Node<Type>;
+		destinationTree->data = sourceTree->data;
+		copy(sourceTree->left, destinationTree->left);
+		copy(sourceTree->right, destinationTree->right);
+	}
 }
 
 // ----------------------------------------------
@@ -227,7 +291,7 @@ void BinTree<Type>::removeNode(Node<Type>* &nodePtr) {
 			parent = current;
 			current = current->right;
 		}
-		
+
 		nodePtr->data = current->data;
 		if (parent == nullptr) {
 			nodePtr->left = current->left;
@@ -241,10 +305,54 @@ void BinTree<Type>::removeNode(Node<Type>* &nodePtr) {
 
 // ----------------------------------------------
 template <typename Type>
-void BinTree<Type>::inorder(Node<Type>* &nodePtr, int level) const {
-	if (nodePtr != nullptr) {
-		inorder(nodePtr->left, level + 1);
-		std::cout << nodePtr->data << "(" << level << ") ";
-		inorder(nodePtr->right, level + 1);
+void BinTree<Type>::removeAll() {
+	destroy(root);
+}
+
+// ----------------------------------------------
+template <typename Type>
+void BinTree<Type>::processInOrder(void(*function)(Type data, int level)) {
+	processNodeInOrder(function, root, 0);
+}
+
+// ----------------------------------------------
+template <typename Type>
+void BinTree<Type>::processPostOrder(void(*function)(Type data, int level)) {
+	processNodePostOrder(function, root, 0);
+}
+
+// ----------------------------------------------
+template <typename Type>
+void BinTree<Type>::processPreOrder(void(*function)(Type data, int level)) {
+	processNodePreOrder(function, root, 0);
+}
+
+// ----------------------------------------------
+template <typename Type>
+void BinTree<Type>::processNodeInOrder(void(*function)(Type data, int level), Node<Type>* &current, int level) {
+	if (current != nullptr) {
+		processNodeInOrder(function, current->left, level + 1);
+		function(current->data, level);
+		processNodeInOrder(function, current->right, level + 1);
+	}
+}
+
+// ----------------------------------------------
+template <typename Type>
+void BinTree<Type>::processNodePostOrder(void(*function)(Type data, int level), Node<Type>* &current, int level) {
+	if (current != nullptr) {
+		processNodePostOrder(function, current->left, level + 1);
+		processNodePostOrder(function, current->right, level + 1);
+		function(current->data, level);
+	}
+}
+
+// ----------------------------------------------
+template <typename Type>
+void BinTree<Type>::processNodePreOrder(void(*function)(Type data, int level), Node<Type>* &current, int level) {
+	if (current != nullptr) {
+		function(current->data, level);
+		processNodePreOrder(function, current->left, level + 1);
+		processNodePreOrder(function, current->right, level + 1);
 	}
 }
